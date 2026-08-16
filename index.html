@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#07c160">
+    <link rel="manifest" href="manifest.json">
+    <title>快捷文本生成器</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f5f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 420px; background: #ffffff; min-height: 100vh; padding: 20px 24px; display: flex; flex-direction: column; align-items: center; }
+        .title { font-size: 18px; font-weight: 600; color: #1a1a1a; margin: 10px 0 24px; }
+        .label { font-size: 14px; color: #666; align-self: flex-start; margin-bottom: 12px; }
+        .input-box { width: 100%; height: 150px; border: 1px solid #e0e0e0; border-radius: 12px; padding: 14px; font-size: 14px; outline: none; background-color: #fafafa; margin-bottom: 24px; resize: none; }
+        .input-box:focus { border-color: #07c160; }
+        .button-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+        .btn { width: 100%; padding: 14px 0; border-radius: 8px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .btn-secondary { background-color: #ebebeb; color: #1e7041; }
+        /* 清除按钮专属样式 */
+        .btn-clear { background-color: #f0f0f0; color: #888888; border: 1px dashed #cccccc; margin-top: 8px; }
+        .btn-clear:active { background-color: #e5e5e5; }
+        .toast { position: fixed; bottom: 40px; background-color: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title">快捷文本生成器</div>
+    <div class="label">请输入你的原始内容：</div>
+    <textarea class="input-box" id="userInput" placeholder="在此输入需要处理的文字..."></textarea>
+    <div class="label" style="text-align: center; width: 100%;">点击按钮生成并复制：</div>
+    <div class="button-list">
+        <button class="btn btn-secondary" onclick="handleGenerate('商务英文邮件')">商务英文邮件</button>
+        <button class="btn btn-secondary" onclick="handleGenerate('给上级的邮件')">给上级的邮件</button>
+        <button class="btn btn-secondary" onclick="handleGenerate('修改语法和拼写错误')">修改语法和拼写错误</button>
+        <button class="btn btn-secondary" onclick="handleGenerate('口语化翻译')">口语化翻译</button>
+        <button class="btn btn-secondary" onclick="handleGenerate('QA Alert')">QA Alert</button>
+        <button class="btn btn-secondary" onclick="handleGenerate('Process Audit')">Process Audit</button>
+        <button class="btn btn-secondary" onclick="handleGenerate('Warranty Tracker')">Warranty Tracker</button>
+        <button class="btn btn-secondary" onclick="handleGenerate('客户投诉')">客户投诉</button>
+        <!-- 新增清除文本框内容的按钮 -->
+        <button class="btn btn-secondary" onclick="clearInput()">清除文本框内容</button>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    }
+
+    async function handleGenerate(type) {
+        const input = document.getElementById('userInput').value.trim();
+        if (!input) return showToast('请先输入需要处理的文字');
+
+        showToast('生成中...');
+        
+        setTimeout(async () => {
+            const result = `【${type}生成结果】:\n${input}`;
+            await navigator.clipboard.writeText(result);
+            showToast(`【${type}】已生成并复制！`);
+        }, 600);
+    }
+
+    // 清空文本框函数
+    function clearInput() {
+        const input = document.getElementById('userInput');
+        if (!input.value.trim()) {
+            showToast('文本框已经是空的了');
+            return;
+        }
+        input.value = '';
+        input.focus(); // 自动聚焦回输入框
+        showToast('已清除内容');
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+</script>
+</body>
+</html>
