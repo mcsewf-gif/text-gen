@@ -134,5 +134,42 @@ Professional English：（可直接发送的英文）
         setTimeout(() => toast.classList.remove('show'), 2000);
     }
 </script>
+   <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    }
+
+    // handleGenerate 必须放在 index.html 的 script 里面！
+    async function handleGenerate(type, customPrompt) {
+        const input = document.getElementById('userInput').value.trim();
+        if (!input) return showToast('请先输入需要处理的文字');
+
+        showToast('生成中...');
+        
+        const promptHeader = customPrompt || `请将以下内容改写为【${type}】：`;
+
+        setTimeout(async () => {
+            const result = `${promptHeader}\n\n${input}`;
+            await navigator.clipboard.writeText(result);
+            showToast(`【${type}】已生成并复制！`);
+        }, 600);
+    }
+
+    function clearInput() {
+        const input = document.getElementById('userInput');
+        if (!input.value.trim()) return showToast('文本框已经是空的了');
+        input.value = '';
+        input.focus();
+        showToast('已清除内容');
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+</script>
+ 
 </body>
 </html>
