@@ -1,17 +1,22 @@
-async function handleGenerate(type, customPrompt) {
-    const input = document.getElementById('userInput').value.trim();
-    if (!input) return showToast('请先输入需要处理的文字');
+const CACHE_NAME = 'pwa-app-v2';
+const ASSETS = ['./', './index.html', './manifest.json'];
 
-    showToast('生成中...');
-    
-    // 如果设置了自定义提示词就用自定义的，没设就用默认前缀
-    const promptHeader = customPrompt || `请将以下内容改写为【${type}】：`;
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+  self.skipWaiting();
+});
 
-    setTimeout(async () => {
-        // 拼接提示词 + 用户输入的原始内容
-        const result = `${promptHeader}\n\n${input}`;
-        await navigator.clipboard.writeText(result);
-        showToast(`【${type}】已生成并复制！`);
-    }, 600);
-}
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((key) => key !== CACHE_NAME && caches.delete(key)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (e) => {
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+});
+
 
