@@ -58,9 +58,9 @@
         showToast('生成中...');
         
         setTimeout(async () => {
-            const result = `【${type}生成结果】:\n${input}`;
+            const result = `${type}生成结果:\n${input}`;
             await navigator.clipboard.writeText(result);
-            showToast(`【${type}】已生成并复制！`);
+            showToast(`${type}已生成并复制！`);
         }, 600);
     }
 
@@ -95,12 +95,12 @@
 
         showToast('生成中...');
         
-        const promptHeader = customPrompt || `请将以下内容改写为【${type}】：`;
+        const promptHeader = customPrompt || `请将以下内容改写为${type}：`;
 
         setTimeout(async () => {
             const result = `${promptHeader}\n\n${input}`;
             await navigator.clipboard.writeText(result);
-            showToast(`【${type}】已生成并复制！`);
+            showToast(`${type}已生成并复制！`);
         }, 600);
     }
 
