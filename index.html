@@ -99,7 +99,7 @@
 
         showToast('生成中...');
         
-        const promptHeader = customPrompt || `请将以下内容改写为${type}：`;
+        const promptHeader = customPrompt || `${type}：`;
 
         setTimeout(async () => {
             const result = `${promptHeader}\n\n${input}`;
